@@ -15,9 +15,11 @@ public class SquareLossStep implements AlgorithmStep {
 
     @Override
     public void run() {
-        Stream<Float> deltaStream = this.context.deltas.stream();
-        this.context.localLoss = deltaStream.reduce(0.0F, (acc, d) -> (float) (acc + Math.pow(d, 2)));
-        this.context.localLoss /= 2;
-        this.context.globalLoss += this.context.localLoss; //broke MSE en gradientDescentTraining
+        float loss = 0f;
+        for (float d : this.context.deltas) {
+            loss += d * d;
+        }
+        this.context.localLoss = loss / 2f;
+        this.context.globalLoss += this.context.localLoss;
     }
 }

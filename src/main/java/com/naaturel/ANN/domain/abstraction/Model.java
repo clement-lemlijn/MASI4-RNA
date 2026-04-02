@@ -12,8 +12,8 @@ public interface Model {
     int neuronCount();
     int indexInLayerOf(Neuron n);
     void forEachNeuron(Consumer<Neuron> consumer);
-    void forEachSynapse(Consumer<Synapse> consumer);
+    //void forEachSynapse(Consumer<Synapse> consumer);
     void forEachOutputNeurons(Consumer<Neuron> consumer);
     void forEachNeuronConnectedTo(Neuron n, Consumer<Neuron> consumer);
-    List<Float> predict(List<Input> inputs);
+    float[] predict(float[] inputs);
 }

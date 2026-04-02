@@ -24,13 +24,12 @@ public class FullyConnectedNetwork implements Model {
     }
 
     @Override
-    public List<Float> predict(List<Input> inputs) {
-        List<Input> previousLayerOutputs = new ArrayList<>(inputs);
-        for(Layer layer : this.layers){
-            List<Float> currentLayerOutputs = layer.predict(previousLayerOutputs);
-            previousLayerOutputs = currentLayerOutputs.stream().map(Input::new).toList();
+    public float[] predict(float[] inputs) {
+        float[] previousLayerOutputs = inputs;
+        for (Layer layer : layers) {
+            previousLayerOutputs = layer.predict(previousLayerOutputs);
         }
-        return previousLayerOutputs.stream().map(Input::getValue).toList();
+        return previousLayerOutputs;
     }
 
     @Override
@@ -49,13 +48,6 @@ public class FullyConnectedNetwork implements Model {
             res += layer.neuronCount();
         }
         return res;
-    }
-
-    @Override
-    public void forEachSynapse(Consumer<Synapse> consumer) {
-        for(Layer l : this.layers){
-            l.forEachSynapse(consumer);
-        }
     }
 
     @Override

@@ -20,15 +20,14 @@ public class GradientDescentErrorStrategy implements AlgorithmStep {
         AtomicInteger synIndex = new AtomicInteger(0);
 
         context.model.forEachNeuron(neuron -> {
-            float correspondingDelta = context.deltas.get(neuronIndex.get());
+            float correspondingDelta = context.deltas[neuronIndex.get()];
 
-            neuron.forEachSynapse(syn -> {
+            for(int i = 0; i < neuron.synCount(); i++){
                 float corrector = context.correctorTerms.get(synIndex.get());
-                corrector += context.learningRate * correspondingDelta * syn.getInput();
+                corrector += context.learningRate * correspondingDelta * neuron.getInput(i);
                 context.correctorTerms.set(synIndex.get(), corrector);
                 synIndex.incrementAndGet();
-            });
-
+            }
             neuronIndex.incrementAndGet();
         });
 

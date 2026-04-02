@@ -19,11 +19,10 @@ public class Layer implements Model {
     }
 
     @Override
-    public List<Float> predict(List<Input> inputs) {
-        List<Float> result = new ArrayList<>();
-        for(Neuron neuron : this.neurons){
-            List<Float> res = neuron.predict(inputs);
-            result.addAll(res);
+    public float[] predict(float[] inputs) {
+        float[] result = new float[neurons.length];
+        for (int i = 0; i < neurons.length; i++) {
+            result[i] = neurons[i].predict(inputs)[0];
         }
         return result;
     }
@@ -54,12 +53,12 @@ public class Layer implements Model {
         }
     }
 
-    @Override
+    /*@Override
     public void forEachSynapse(Consumer<Synapse> consumer) {
         for (Neuron n : this.neurons){
             n.forEachSynapse(consumer);
         }
-    }
+    }*/
 
     @Override
     public void forEachOutputNeurons(Consumer<Neuron> consumer) {

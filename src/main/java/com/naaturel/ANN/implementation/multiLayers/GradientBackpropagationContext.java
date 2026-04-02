@@ -10,20 +10,21 @@ import java.util.Map;
 
 public class GradientBackpropagationContext extends TrainingContext {
 
-    public final Map<Neuron, Float> errorSignals;
+    public final float[] errorSignals;
     public final float[] correctionBuffer;
+    public final boolean[] errorSignalsComputed;
 
     public int currentSample;
     public int batchSize;
 
     public GradientBackpropagationContext(Model model, DataSet dataSet, float learningRate, int batchSize){
-        this.model = model;
-        this.dataset = dataSet;
+        super(model, dataSet);
         this.learningRate = learningRate;
         this.batchSize = batchSize;
 
-        this.errorSignals = new HashMap<>();
+        this.errorSignals = new float[model.neuronCount()];
         this.correctionBuffer = new float[model.synCount()];
+        this.errorSignalsComputed = new boolean[model.neuronCount()];
         this.currentSample = 1;
     }
 }

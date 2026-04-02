@@ -21,13 +21,12 @@ public class SimpleDeltaStep implements AlgorithmStep {
     public void run() {
         DataSet dataSet = context.dataset;
         DataSetEntry entry = context.currentEntry;
-        List<Float> predicted = context.predictions;
+        float[] predicted = context.predictions;
         List<Float> expected = dataSet.getLabelsAsFloat(entry);
 
-        //context.delta = label.getValue() - context.predictions;
-        context.deltas = IntStream.range(0, predicted.size())
-                .mapToObj(i -> expected.get(i) - predicted.get(i))
-                .collect(Collectors.toList());
+        for (int i = 0; i < predicted.length; i++) {
+            context.deltas[i] = expected.get(i) - predicted[0];
+        }
     }
 
 }

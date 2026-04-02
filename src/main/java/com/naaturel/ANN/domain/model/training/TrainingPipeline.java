@@ -86,7 +86,7 @@ public class TrainingPipeline {
             System.out.printf("[Training finished in %.3fs]", (end-start)/1000.0);
         }
 
-        if(this.visualization) this.visualize(ctx);
+        //if(this.visualization) this.visualize(ctx);
     }
 
     private void executeSteps(TrainingContext ctx){
@@ -101,15 +101,15 @@ public class TrainingPipeline {
 
             if(this.verbose && ctx.epoch % this.verboseDelay == 0) {
                 System.out.printf("Epoch : %d, ", ctx.epoch);
-                System.out.printf("predicted : %s, ", Arrays.toString(ctx.predictions.toArray()));
+                System.out.printf("predicted : %s, ", Arrays.toString(ctx.predictions));
                 System.out.printf("expected : %s, ", Arrays.toString(ctx.expectations.toArray()));
-                System.out.printf("delta : %s, ", Arrays.toString(ctx.deltas.toArray()));
+                System.out.printf("delta : %s, ", Arrays.toString(ctx.deltas));
                 System.out.printf("loss : %.5f\n", ctx.localLoss);
             }
         }
     }
 
-    private void visualize(TrainingContext ctx){
+    /*private void visualize(TrainingContext ctx){
         AtomicInteger neuronIndex = new AtomicInteger(0);
         ctx.model.forEachNeuron(n -> {
             List<Float> weights = new ArrayList<>();
@@ -129,6 +129,6 @@ public class TrainingPipeline {
             i++;
         }
         this.visualizer.buildLineGraph();
-    }
+    }*/
 
 }

@@ -24,9 +24,7 @@ public class GradientDescentTraining implements Trainer {
 
     @Override
     public void train(float learningRate, int epoch, Model model, DataSet dataset) {
-        GradientDescentTrainingContext context = new GradientDescentTrainingContext();
-        context.dataset = dataset;
-        context.model = model;
+        GradientDescentTrainingContext context = new GradientDescentTrainingContext(model, dataset);
         context.learningRate = learningRate;
         context.correctorTerms =  new ArrayList<>();
 
@@ -43,7 +41,9 @@ public class GradientDescentTraining implements Trainer {
                 GradientDescentTrainingContext gdCtx = (GradientDescentTrainingContext) ctx;
                 gdCtx.globalLoss = 0.0F;
                 gdCtx.correctorTerms.clear();
-                gdCtx.model.forEachSynapse(syn -> gdCtx.correctorTerms.add(0F));
+                for(int i = 0; i < gdCtx.model.synCount(); i++){
+                    gdCtx.correctorTerms.add(0F);
+                }
             })
             .afterEpoch(ctx -> {
                 context.globalLoss /= context.dataset.size();

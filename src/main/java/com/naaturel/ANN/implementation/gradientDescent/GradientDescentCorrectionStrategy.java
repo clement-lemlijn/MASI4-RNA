@@ -14,12 +14,14 @@ public class GradientDescentCorrectionStrategy implements AlgorithmStep {
 
     @Override
     public void run() {
-        AtomicInteger i = new AtomicInteger(0);
-        context.model.forEachSynapse(syn -> {
-            float corrector = context.correctorTerms.get(i.get());
-            float c = syn.getWeight() + corrector;
-            syn.setWeight(c);
-            i.incrementAndGet();
+        int[] globalSynIndex = {0};
+        context.model.forEachNeuron(n -> {
+            for(int i = 0; i < n.synCount(); i++){
+                float corrector = context.correctorTerms.get(globalSynIndex[0]);
+                float c = n.getWeight(i) + corrector;
+                n.setWeight(i, c);
+                globalSynIndex[0]++;
+            }
         });
     }
 }

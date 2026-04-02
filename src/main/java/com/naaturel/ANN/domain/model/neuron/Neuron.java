@@ -7,63 +7,64 @@ import java.util.function.Consumer;
 
 public class Neuron implements Model {
 
-    protected Synapse[] synapses;
-    protected Bias bias;
-    protected ActivationFunction activationFunction;
-    protected Float output;
-    protected Float weightedSum;
+    private final int id;
+    private float output;
+    private final float[] weights;
+    private final float[] inputs;
+    private final ActivationFunction activationFunction;
 
-    public Neuron(Synapse[] synapses, Bias bias, ActivationFunction func){
-        this.synapses = synapses;
-        this.bias = bias;
+    public Neuron(int id, Synapse[] synapses, Bias bias, ActivationFunction func){
+        this.id = id;
         this.activationFunction = func;
-        this.output = null;
-        this.weightedSum = null;
-    }
 
-    public void updateBias(Weight weight) {
-        this.bias.setWeight(weight.getValue());
-    }
+        output = 0;
+        weights = new float[synapses.length+1]; //takes the bias into account
+        inputs = new float[synapses.length+1]; //takes the bias into account
 
-    public void updateWeight(int index, Weight weight) {
-        this.synapses[index].setWeight(weight.getValue());
-    }
-
-    protected void setInputs(List<Input> inputs){
-        for(int i = 0;  i < inputs.size() && i < synapses.length; i++){
-            Synapse syn = this.synapses[i];
-            syn.setInput(inputs.get(i));
+        weights[0] = bias.getWeight();
+        inputs[0] = bias.getInput();
+        for (int i = 0; i < synapses.length; i++){
+            weights[i+1] = synapses[i].getWeight();
+            inputs[i+1] = synapses[i].getInput();
         }
+    }
+
+    public void setWeight(int index, float value) {
+        this.weights[index] = value;
+    }
+
+    public float getWeight(int index) {
+        return this.weights[index];
+    }
+
+    public float getInput(int index) {
+        return this.inputs[index];
     }
 
     public ActivationFunction getActivationFunction(){
         return this.activationFunction;
     }
 
-    public float getOutput(){
-        return this.output;
-    }
-
-    public float getWeight(int index){
-        return this.synapses[index].getWeight();
-    }
-
-    public float getWeightedSum(){
-        return this.weightedSum;
-    }
-
     public float calculateWeightedSum() {
-        this.weightedSum = 0F;
-        this.weightedSum += this.bias.getWeight() * this.bias.getInput();
-        for(Synapse syn : this.synapses){
-            this.weightedSum += syn.getWeight() * syn.getInput();
+        int count = weights.length;
+        float weightedSum = 0F;
+        for (int i = 0; i < count; i++){
+            weightedSum += weights[i] * inputs[i];
         }
-        return this.weightedSum;
+        return weightedSum;
+    }
+
+    public int getId(){
+        return this.id;
+    }
+
+    public float getOutput() {
+        return this.output;
     }
 
     @Override
     public int synCount() {
-        return this.synapses.length+1; //take the bias into account
+        return this.weights.length;
     }
 
     @Override
@@ -77,23 +78,15 @@ public class Neuron implements Model {
     }
 
     @Override
-    public List<Float> predict(List<Input> inputs) {
+    public float[] predict(float[] inputs) {
         this.setInputs(inputs);
-        this.output = activationFunction.accept(this);
-        return List.of(output);
+        output = activationFunction.accept(this);
+        return new float[] {output};
     }
 
     @Override
     public void forEachNeuron(Consumer<Neuron> consumer) {
         consumer.accept(this);
-    }
-
-    @Override
-    public void forEachSynapse(Consumer<Synapse> consumer) {
-        consumer.accept(this.bias);
-        for (Synapse syn : this.synapses){
-            consumer.accept(syn);
-        }
     }
 
     @Override
@@ -105,4 +98,9 @@ public class Neuron implements Model {
     public void forEachNeuronConnectedTo(Neuron n, Consumer<Neuron> consumer) {
         throw new UnsupportedOperationException("Neurons have no connection with themselves");
     }
+
+    private void setInputs(float[] values){
+        System.arraycopy(values, 0, inputs, 1, values.length);
+    }
+
 }

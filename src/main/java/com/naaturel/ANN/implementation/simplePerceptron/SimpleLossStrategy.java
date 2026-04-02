@@ -12,6 +12,10 @@ public class SimpleLossStrategy implements AlgorithmStep {
 
     @Override
     public void run() {
-        this.context.localLoss = this.context.deltas.stream().reduce(0.0F, Float::sum);
+        float loss = 0f;
+        for (float d : context.deltas) {
+            loss += d;
+        }
+        context.localLoss = loss;
     }
 }

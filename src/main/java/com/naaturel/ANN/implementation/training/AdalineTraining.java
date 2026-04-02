@@ -24,9 +24,7 @@ public class AdalineTraining implements Trainer {
 
     @Override
     public void train(float learningRate, int epoch, Model model, DataSet dataset) {
-        AdalineTrainingContext context = new AdalineTrainingContext();
-        context.dataset = dataset;
-        context.model = model;
+        AdalineTrainingContext context = new AdalineTrainingContext(model, dataset);
         context.learningRate = learningRate;
 
         List<AlgorithmStep> steps = List.of(

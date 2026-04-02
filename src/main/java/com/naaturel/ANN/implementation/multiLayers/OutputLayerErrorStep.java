@@ -3,37 +3,40 @@ package com.naaturel.ANN.implementation.multiLayers;
 import com.naaturel.ANN.domain.abstraction.AlgorithmStep;
 import com.naaturel.ANN.infrastructure.dataset.DataSetEntry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class OutputLayerErrorStep implements AlgorithmStep {
 
     private final GradientBackpropagationContext context;
+    private final float[] expectations;
 
     public OutputLayerErrorStep(GradientBackpropagationContext context){
         this.context = context;
+        this.expectations = new float[context.dataset.getNbrLabels()];
     }
 
     @Override
     public void run() {
-        context.deltas = new ArrayList<>();
-        DataSetEntry entry = this.context.currentEntry;
-        List<Float> expectations = this.context.dataset.getLabelsAsFloat(entry);
-        AtomicInteger index = new AtomicInteger(0);
+        Arrays.fill(context.errorSignals, 0f);
+        Arrays.fill(context.errorSignalsComputed, false);
 
-        context.errorSignals.clear();
-        this.context.model.forEachOutputNeurons(n -> {
-            float expected = expectations.get(index.get());
+        DataSetEntry entry = context.currentEntry;
+        List<Float> labels = context.dataset.getLabelsAsFloat(entry);
+        for (int i = 0; i < labels.size(); i++) {
+            expectations[i] = labels.get(i);
+        }
+
+        int[] index = {0};
+        context.model.forEachOutputNeurons(n -> {
+            float expected = expectations[index[0]];
             float predicted = n.getOutput();
-            float output = n.getOutput();
             float delta = expected - predicted;
-            float signal = delta * n.getActivationFunction().derivative(output);
 
-            this.context.deltas.add(delta);
-            this.context.errorSignals.put(n, signal);
-            index.incrementAndGet();
+            context.deltas[index[0]] = delta;
+            context.errorSignals[n.getId()] = delta * n.getActivationFunction().derivative(predicted);
+            context.errorSignalsComputed[n.getId()] = true;
+            index[0]++;
         });
     }
 }

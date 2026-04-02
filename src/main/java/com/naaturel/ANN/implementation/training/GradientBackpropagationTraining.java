@@ -17,7 +17,7 @@ public class GradientBackpropagationTraining implements Trainer {
     @Override
     public void train(float learningRate, int epoch, Model model, DataSet dataset) {
         GradientBackpropagationContext context =
-                new GradientBackpropagationContext(model, dataset, learningRate, dataset.size()/3);
+                new GradientBackpropagationContext(model, dataset, learningRate, dataset.size());
 
         List<AlgorithmStep> steps = List.of(
                 new SimplePredictionStep(context),

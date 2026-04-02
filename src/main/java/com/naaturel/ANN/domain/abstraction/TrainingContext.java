@@ -11,12 +11,19 @@ public abstract class TrainingContext {
     public DataSetEntry currentEntry;
 
     public List<Float> expectations;
-    public List<Float> predictions;
-    public List<Float> deltas;
+    public float[] predictions;
+    public float[] deltas;
 
     public float globalLoss;
     public float localLoss;
 
     public float learningRate;
     public int epoch;
+
+    public TrainingContext(Model model, DataSet dataset) {
+        this.model = model;
+        this.dataset = dataset;
+        this.deltas = new float[dataset.getNbrLabels()];
+    }
+
 }

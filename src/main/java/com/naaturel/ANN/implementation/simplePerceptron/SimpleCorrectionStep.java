@@ -18,17 +18,16 @@ public class SimpleCorrectionStep implements AlgorithmStep {
     public void run() {
         if(context.expectations.equals(context.predictions)) return;
         AtomicInteger neuronIndex = new AtomicInteger(0);
-        AtomicInteger synIndex = new AtomicInteger(0);
 
         context.model.forEachNeuron(neuron -> {
-            float correspondingDelta = context.deltas.get(neuronIndex.get());
-            neuron.forEachSynapse(syn -> {
-                float currentW = syn.getWeight();
-                float currentInput  = syn.getInput();
+            float correspondingDelta = context.deltas[neuronIndex.get()];
+
+            for(int i = 0; i < neuron.synCount(); i++){
+                float currentW = neuron.getWeight(i);
+                float currentInput  = neuron.getInput(i);
                 float newValue = currentW + (context.learningRate * correspondingDelta * currentInput);
-                syn.setWeight(newValue);
-                synIndex.incrementAndGet();
-            });
+                neuron.setWeight(i, newValue);
+            }
             neuronIndex.incrementAndGet();
         });
     }

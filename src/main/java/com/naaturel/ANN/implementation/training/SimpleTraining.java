@@ -17,7 +17,7 @@ public class SimpleTraining implements Trainer {
 
     @Override
     public void train(float learningRate, int epoch, Model model, DataSet dataset) {
-        SimpleTrainingContext context = new SimpleTrainingContext();
+        SimpleTrainingContext context = new SimpleTrainingContext(model, dataset);
         context.dataset = dataset;
         context.model = model;
         context.learningRate = learningRate;

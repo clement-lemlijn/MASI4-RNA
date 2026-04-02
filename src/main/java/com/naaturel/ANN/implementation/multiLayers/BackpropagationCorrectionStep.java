@@ -2,41 +2,55 @@ package com.naaturel.ANN.implementation.multiLayers;
 
 import com.naaturel.ANN.domain.abstraction.AlgorithmStep;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class BackpropagationCorrectionStep implements AlgorithmStep {
 
-    private GradientBackpropagationContext context;
+    private final GradientBackpropagationContext context;
+    private final int synCount;
+    private final float[] inputs;
+    private final float[] signals;
 
     public BackpropagationCorrectionStep(GradientBackpropagationContext context){
         this.context = context;
+        this.synCount = context.correctionBuffer.length;
+        this.inputs = new float[synCount];
+        this.signals = new float[synCount];
     }
 
     @Override
     public void run() {
-
-        AtomicInteger synIndex = new AtomicInteger(0);
-        this.context.model.forEachNeuron(n -> {
-            float signal = context.errorSignals.get(n);
-            n.forEachSynapse(syn -> {
-                float lr = context.learningRate;
-                float corrector = lr * signal * syn.getInput();
-                float existingCorrector = context.correctionBuffer[synIndex.get()];
-                float newCorrector = existingCorrector + corrector;
-
-                if(context.currentSample >= context.batchSize){
-                    float newWeight = syn.getWeight() + newCorrector;
-                    syn.setWeight(newWeight);
-                    context.correctionBuffer[synIndex.get()] = 0;
-                } else {
-                    context.correctionBuffer[synIndex.get()] = newCorrector;
-                }
-                synIndex.incrementAndGet();
-            });
+        int[] synIndex = {0};
+        context.model.forEachNeuron(n -> {
+            float signal = context.errorSignals[n.getId()];
+            for (int i = 0; i < n.synCount(); i++){
+                inputs[synIndex[0]] = n.getInput(i);
+                signals[synIndex[0]] = signal;
+                synIndex[0]++;
+            }
         });
-        if(context.currentSample >= context.batchSize) {
+
+        float lr = context.learningRate;
+        boolean applyUpdate = context.currentSample >= context.batchSize;
+
+        for (int i = 0; i < synCount; i++) {
+            context.correctionBuffer[i] += lr * signals[i] * inputs[i];
+        }
+
+        if (applyUpdate) {
+            syncWeights();
             context.currentSample = 0;
         }
-        context.currentSample += 1;
+
+        context.currentSample++;
+    }
+
+    private void syncWeights() {
+        int[] synIndex = {0};
+        context.model.forEachNeuron(n -> {
+            for (int i = 0; i < n.synCount(); i++) {
+                n.setWeight(i, n.getWeight(i) + context.correctionBuffer[synIndex[0]]);
+                context.correctionBuffer[synIndex[0]] = 0f;
+                synIndex[0]++;
+            }
+        });
     }
 }
