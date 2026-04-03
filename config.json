@@ -1,0 +1,14 @@
+{
+  "model": {
+    "new": false,
+    "parameters": [25, 50, 1],
+    "path": "C:/Users/Laurent/Desktop/ANN-framework/snapshot.json"
+  },
+  "training" : {
+    "learning_rate" : 0.01,
+    "max_epoch" : 2000
+  },
+  "dataset" : {
+    "path" : "C:/Users/Laurent/Desktop/ANN-framework/src/main/resources/assets/table_2_10.csv"
+  }
+}
