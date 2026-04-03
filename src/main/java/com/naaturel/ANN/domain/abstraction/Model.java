@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 public interface Model {
     int synCount();
     int neuronCount();
+    int layerIndexOf(Neuron n);
     int indexInLayerOf(Neuron n);
     void forEachNeuron(Consumer<Neuron> consumer);
     //void forEachSynapse(Consumer<Synapse> consumer);

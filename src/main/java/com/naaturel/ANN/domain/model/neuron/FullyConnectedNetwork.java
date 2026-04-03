@@ -49,7 +49,6 @@ public class FullyConnectedNetwork implements Model {
         }
         return res;
     }
-
     @Override
     public void forEachNeuron(Consumer<Neuron> consumer) {
         for(Layer l : this.layers){
@@ -65,7 +64,13 @@ public class FullyConnectedNetwork implements Model {
 
     @Override
     public void forEachNeuronConnectedTo(Neuron n, Consumer<Neuron> consumer) {
+        if(!this.connectionMap.containsKey(n)) return;
         this.connectionMap.get(n).forEach(consumer);
+    }
+
+    @Override
+    public int layerIndexOf(Neuron n) {
+        return this.layerIndexByNeuron.get(n);
     }
 
     @Override

@@ -42,6 +42,11 @@ public class Layer implements Model {
     }
 
     @Override
+    public int layerIndexOf(Neuron n) {
+        return 0;
+    }
+
+    @Override
     public int indexInLayerOf(Neuron n) {
         return this.neuronIndex.get(n);
     }
