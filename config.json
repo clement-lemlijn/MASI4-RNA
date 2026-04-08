@@ -1,14 +1,16 @@
 {
   "model": {
-    "new": false,
-    "parameters": [25, 50, 1],
+    "new": true,
+    "parameters": [50, 50, 5],
     "path": "C:/Users/Laurent/Desktop/ANN-framework/snapshot.json"
   },
   "training" : {
-    "learning_rate" : 0.01,
-    "max_epoch" : 2000
+    "verbose" : false,
+    "learning_rate" : 0.0005,
+    "max_epoch" : 5000,
+    "batch_size" : 5
   },
   "dataset" : {
-    "path" : "C:/Users/Laurent/Desktop/ANN-framework/src/main/resources/assets/table_2_10.csv"
+    "path" : "C:/Users/Laurent/Desktop/MASI4-RNA/src/main/resources/assets/LangageDesSignes/data_formatted.csv"
   }
 }

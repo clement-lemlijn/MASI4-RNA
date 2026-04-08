@@ -1,11 +1,8 @@
 package com.naaturel.ANN;
 
 import com.naaturel.ANN.domain.abstraction.Model;
-import com.naaturel.ANN.domain.abstraction.Network;
 import com.naaturel.ANN.domain.model.neuron.Neuron;
 import com.naaturel.ANN.domain.abstraction.Trainer;
-import com.naaturel.ANN.implementation.gradientDescent.Linear;
-import com.naaturel.ANN.implementation.multiLayers.Sigmoid;
 import com.naaturel.ANN.implementation.multiLayers.TanH;
 import com.naaturel.ANN.implementation.training.GradientBackpropagationTraining;
 import com.naaturel.ANN.infrastructure.config.ConfigDto;
@@ -17,7 +14,6 @@ import com.naaturel.ANN.domain.model.neuron.*;
 import com.naaturel.ANN.infrastructure.graph.GraphVisualizer;
 import com.naaturel.ANN.infrastructure.persistence.ModelSnapshot;
 
-import java.io.Console;
 import java.util.*;
 
 public class Main {
@@ -29,14 +25,17 @@ public class Main {
         boolean newModel = config.getModelProperty("new", Boolean.class);
         int[] modelParameters = config.getModelProperty("parameters", int[].class);
         String modelPath = config.getModelProperty("path", String.class);
+
         int maxEpoch = config.getTrainingProperty("max_epoch", Integer.class);
+        int batchSize = config.getTrainingProperty("batch_size", Integer.class);
+        boolean verbose = config.getTrainingProperty("verbose", Boolean.class);
         float learningRate = config.getTrainingProperty("learning_rate", Double.class).floatValue();
+
         String datasetPath = config.getDatasetProperty("path", String.class);
 
-        int nbrClass = 1;
+        int nbrClass = 5;
         DataSet dataset = new DatasetExtractor().extract(datasetPath, nbrClass);
         int nbrInput = dataset.getNbrInputs();
-
 
         ModelSnapshot snapshot;
 
@@ -45,7 +44,7 @@ public class Main {
             network = createNetwork(modelParameters, nbrInput);
             snapshot = new ModelSnapshot(network);
             System.out.println("Parameters: " + network.synCount());
-            Trainer trainer = new GradientBackpropagationTraining();
+            Trainer trainer = new GradientBackpropagationTraining(batchSize, verbose);
             trainer.train(learningRate, maxEpoch, network, dataset);
         } else {
             snapshot = new ModelSnapshot();
@@ -53,7 +52,7 @@ public class Main {
             network = snapshot.getModel();
         }
 
-        plotGraph(dataset, network);
+        //plotGraph(dataset, network);
         snapshot.saveToFile(modelPath);
     }
 

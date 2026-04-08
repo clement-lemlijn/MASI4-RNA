@@ -14,10 +14,19 @@ import com.naaturel.ANN.infrastructure.dataset.DataSet;
 import java.util.List;
 
 public class GradientBackpropagationTraining implements Trainer {
+
+    private final int batchSize;
+    private final boolean verbose;
+
+    public GradientBackpropagationTraining(int bachSize, boolean verbose) {
+        this.batchSize = bachSize;
+        this.verbose = verbose;
+    }
+
     @Override
     public void train(float learningRate, int epoch, Model model, DataSet dataset) {
         GradientBackpropagationContext context =
-                new GradientBackpropagationContext(model, dataset, learningRate, dataset.size());
+                new GradientBackpropagationContext(model, dataset, learningRate, batchSize);
 
         List<AlgorithmStep> steps = List.of(
                 new SimplePredictionStep(context),
@@ -35,7 +44,7 @@ public class GradientBackpropagationTraining implements Trainer {
                 .afterEpoch(ctx -> {
                     ctx.globalLoss /= dataset.size();
                 })
-                .withVerbose(false,epoch/10)
+                .withVerbose(verbose,epoch/10)
                 .withTimeMeasurement(true)
                 .run(context);
     }
